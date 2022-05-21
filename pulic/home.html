@@ -116,8 +116,10 @@
 
                 <script>
                     const validImageTypes = ["image/gif", "image/jpeg", "image/png"]
+                    const description = document.getElementById("description");
                     const selected_img = document.getElementById("selected-img");
                     const imgThumnal = document.getElementById("imgThumnal");
+                    const btn_upload = document.getElementById("save-product");
                     selected_img.style.display = "none";
 
                     function previewImage(image) {
@@ -129,10 +131,17 @@
                         reader.readAsDataURL(image.files[0]);
                         imgThumnal.onchange(function() {
                             previewImage(this);
-                        })
+                        });
+                        btn_upload.onclick = function (){
+                            $("description").removeClass("is-invalid");
+                            $("imgThumnal").removeClass("is-invalid");
 
+                            const desc = description.value;
+                            const img = imgThumnal.value;
+                        };
                     }
                 </script>
+            </div>
             </div>
         </div>
     
@@ -156,6 +165,16 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         firebase.auth.Auth.Persistence.LOCAl;
+
+        document.getElementById("btn-logout").onclick = function (){
+            firebase.auth().signOut();
+
+            firebase.auth().onAuthStateChanged(function (user) {
+                if (!user) {
+                    window.location.href = "login";
+                }
+            });
+        }
     </script>
     <script src="js/index.js"></script>
     <!-- JavaScript Bundle with Popper -->
