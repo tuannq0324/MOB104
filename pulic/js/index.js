@@ -24,6 +24,6 @@ document.getElementById("btn-logout").onclick = function () {
 }
 firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
-        window.location.href = "login";
+        window.location.href = "login.html";
     }
 });
