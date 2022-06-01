@@ -5,7 +5,7 @@ document.getElementById("btn-login").onclick = function () {
 
     if (email !== "" && password !== "") {
         if (email === "admin@gmail.com" || email === "tuan51002@gmail.com"
-            || email === "tuan051002@gmail.com") {
+            || email === "tuan051002@gmail.com" || email === "bao1234@gmail.com") {
             var result = firebase.auth().signInWithEmailAndPassword(email, password);
             result.catch(function (error) {
                 var errorCode = error.code;
