@@ -26,7 +26,7 @@
 </head>
 
 <style>
-    .form-group{
+    .form-group {
         display: block;
     }
 </style>
@@ -78,9 +78,9 @@
                             <textarea type="text" placeholder="Description..." class="form-control" id="description" style="width: 100%; height: 100px" required></textarea>
                         </div>
                         <div class="form-group">
-                            <input type="text" onchange="previewImage()" class="form-control" style="width: 100%; height: 45px" id="imgThumnal" placeholder="Link of image..." required>
+                            <input type="text" onchange="previewImage()"  class="form-control" style="width: 100%; height: 45px" id="imgThumnal" placeholder="Link of image..." required>
                         </div>
-                        <div class="form-group" style="padding-bottom: 10px">
+                        <div class="form-group text-center" style="padding-bottom: 10px">
                             <img id="selected-img" width="auto" height="auto" src="#">
                         </div>
                         <div class="form-group">
@@ -93,7 +93,7 @@
                             <input type="text" class="form-control" style="width: 100%; height: 45px" id="productName" placeholder="Product Name..." required>
                         </div>
                         <div class="form-group text-center">
-                            <button id="btn_upload" type="submit" style="width: 150px; height: 60px;" class="btn btn-light bg-dark text-light">
+                            <button id="btn_upload" type="button" style="width: 150px; height: 60px;" class="btn btn-light bg-dark text-light">
                             Upload Product
                         </button>
                         </div>
@@ -136,56 +136,52 @@
         function previewImage() {
             selected_img.src = imgThumnal.value
 
-            selected_img.onerror = function(e) {
+            selected_img.onerror = function error(e) {
                 alert("Image not found");
                 selected_img.style.display = "none"
+                btn_upload.onclick = function (){
+                    alert("Image not found. Please choose valid link of image");
+                }
             }
             selected_img.onload = function(e) {
                 selected_img.style.display = "block";
                 btn_upload.onclick = function firebaseUpload() {
 
                     const databaseRef = firebase.database().ref().child('Product');
-                    databaseRef.once("value").then(function(snapshot) {
+                    databaseRef.once("value").then(function() {
 
-                        const storageRef = firebase.storage().ref().child("imgThumnal");
-                        const productStorageRef = storageRef.child("img1");
-                        const uploadTask = productStorageRef.put(selected_img);
-                        uploadTask.on(
-                            "state_changed",
-                            function error(err) {
+                        imgThumnalarr = {
+                            img1: imgThumnal.value,
+                        }
 
-                            },
-                            function complete() {
-                                imgThumnalarr = {
-                                    img1: imgThumnal.value,
-                                }
+                        const productData = {
+                            "description": description.value,
+                            "imgThumnal": imgThumnalarr,
+                            "moreInfo": moreInfo.value,
+                            "priceProduct": priceProduct.value,
+                            "productName": productName.value,
+                        }
 
-                                const productData = {
-                                    "description": description.value,
-                                    "imgThumnal": imgThumnalarr,
-                                    "moreInfo": moreInfo.value,
-                                    "priceProduct": priceProduct.value,
-                                    "productName": productName.value,
-                                }
+                        const newProductRef = databaseRef.push();
+                        newProductRef.set(productData, function(err) {
+                            const results = $(result)
+                            if (err) {
+                                results.attr("class", "alert alert-danger");
+                                results.html(err.message);
+                            } else {
+                                results.attr("class", "alert alert-success");
+                                results.html("Product has been uploaded successfully");
 
-                                const newProductRef = databaseRef.push();
-                                newProductRef.set(productData, function(err) {
-                                    const results = $(result)
-                                    if (err) {
-                                        results.attr("class", "alert alert-danger");
-                                        results.innerHTML = err.message;
-                                    } else {
-                                        results.attr("class", "alert alert-success");
-                                        results.innerHTML = "Product has been uploaded successfully";
-
-                                        // window.open("", "_self");
-                                    }
-                                })
+                                // window.open("", "_self");
                             }
-                        )
+                        })
                     })
                 }
             }
+        }
+
+        function upload(){
+
         }
     </script>
     <!-- JavaScript Bundle with Popper -->
