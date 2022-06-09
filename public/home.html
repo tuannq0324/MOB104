@@ -17,11 +17,15 @@
 </head>
 <!-- MATERIAL DESIGN ICONIC FONT -->
 <link rel="stylesheet" href="design_files/fonts/material-design-iconic-font/css/material-design-iconic-font.min.css">
+<link rel="stylesheet" href="css/index.css">
 
-<script type="module" src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
-<script type="module" src="https://www.gstatic.com/firebasejs/8.7.1/firebase-auth.js"></script>
-<script type="module" src="https://www.gstatic.com/firebasejs/8.7.1/firebase-database.js"></script>
-<script type="module" src="https://www.gstatic.com/firebasejs/8.7.1/firebase-storage.js"></script>
+<script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/8.7.0/firebase-app.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/8.7.0/firebase-auth.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/8.7.0/firebase-database.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/8.7.0/firebase-storage.js"></script>
+<script type="module" src="js/index.js"></script>
 <title>HOME</title>
 </head>
 
@@ -70,15 +74,15 @@
         <div class="col-lg-12 m-2">
             <div class="container" id="container">
                 <script>
-                    const counter = 0;
+                    let counter = 0;
                 </script>
                 <div class="container p-3">
-                    <form id="main-form" class="m-2">
+                    <form id="main_form" class="m-2">
                         <div class="form-group">
                             <textarea type="text" placeholder="Description..." class="form-control" id="description" style="width: 100%; height: 100px" required></textarea>
                         </div>
                         <div class="form-group">
-                            <input type="text" onchange="previewImage()"  class="form-control" style="width: 100%; height: 45px" id="imgThumnal" placeholder="Link of image..." required>
+                            <input type="text" onchange="previewImage()" class="form-control" style="width: 100%; height: 45px" id="imgThumnal" placeholder="Link of image... (required length is equal to width)" required>
                         </div>
                         <div class="form-group text-center" style="padding-bottom: 10px">
                             <img id="selected-img" width="auto" height="auto" src="#">
@@ -93,13 +97,11 @@
                             <input type="text" class="form-control" style="width: 100%; height: 45px" id="productName" placeholder="Product Name..." required>
                         </div>
                         <div class="form-group text-center">
-                            <button id="btn_upload" type="button" style="width: 150px; height: 60px;" class="btn btn-light bg-dark text-light">
-                            Upload Product
-                        </button>
+                            <button id="btn_upload" onclick="checkEmpty()" type="button" style="width: 150px; height: 60px;" class="btn btn-light bg-dark text-light">Upload Product</button>
                         </div>
                     </form>
 
-                    <div id="result"></div>
+                    <div style="text-align: center" id="result"></div>
                 </div>
                 <hr>
                 <br><br><br>
@@ -110,9 +112,13 @@
                 <hr>
                 <br>
 
-                <div class="row container-fluid bg-3">
-                    <div class="col-sm-12" id="product">
 
+<!--                <div class="row container-fluid bg-3">-->
+<!--                    <div class="col-sm-12" >-->
+<!--                    </div>-->
+<!--                </div>-->
+                <div class="container mt-100" >
+                    <div class="row" id="products">
                     </div>
                 </div>
                 <br>
@@ -120,9 +126,12 @@
         </div>
     </div>
 
-    <script type="module" src="js/index.js"></script>
+    <script type="module" src="js/index.js">
+
+    </script>
     <script>
         const validImageTypes = ["image/gif", "image/jpeg", "image/png"]
+        const main_form = document.getElementById("main_form");
         const description = document.getElementById("description");
         const imgThumnal = document.getElementById("imgThumnal");
         const selected_img = document.getElementById("selected-img");
@@ -131,6 +140,9 @@
         const productName = document.getElementById("productName");
         const btn_upload = document.getElementById("btn_upload");
         const result = document.getElementById("result");
+        const results = $(result);
+        const products = document.getElementById("products");
+
         selected_img.style.display = "none"
 
         function previewImage() {
@@ -139,50 +151,117 @@
             selected_img.onerror = function error(e) {
                 alert("Image not found");
                 selected_img.style.display = "none"
-                btn_upload.onclick = function (){
+                btn_upload.onclick = function() {
                     alert("Image not found. Please choose valid link of image");
                 }
             }
             selected_img.onload = function(e) {
                 selected_img.style.display = "block";
-                btn_upload.onclick = function firebaseUpload() {
-
-                    const databaseRef = firebase.database().ref().child('Product');
-                    databaseRef.once("value").then(function() {
-
-                        imgThumnalarr = {
-                            img1: imgThumnal.value,
-                        }
-
-                        const productData = {
-                            "description": description.value,
-                            "imgThumnal": imgThumnalarr,
-                            "moreInfo": moreInfo.value,
-                            "priceProduct": priceProduct.value,
-                            "productName": productName.value,
-                        }
-
-                        const newProductRef = databaseRef.push();
-                        newProductRef.set(productData, function(err) {
-                            const results = $(result)
-                            if (err) {
-                                results.attr("class", "alert alert-danger");
-                                results.html(err.message);
-                            } else {
-                                results.attr("class", "alert alert-success");
-                                results.html("Product has been uploaded successfully");
-
-                                // window.open("", "_self");
-                            }
-                        })
-                    })
+                btn_upload.onclick = function() {
+                    checkEmpty();
                 }
             }
         }
 
-        function upload(){
+        function checkEmpty() {
+            if (description.value === "") {
+                results.attr("class", "alert alert-danger")
+                results.html("Description cannot be empty")
+            } else if (imgThumnal.value === "") {
+                results.attr("class", "alert alert-danger")
+                results.html("Link of image cannot be empty")
+            } else if (moreInfo.value === "") {
+                results.attr("class", "alert alert-danger")
+                results.html("More info cannot be empty")
+            } else if (priceProduct.value === "") {
+                results.attr("class", "alert alert-danger")
+                results.html("Price product cannot be empty")
+            } else if (productName.value === "") {
+                results.attr("class", "alert alert-danger")
+                results.html("Product name cannot be empty")
+            } else {
+                results.attr("class", "d-none")
+                firebaseUpload();
+            }
 
+            function firebaseUpload() {
+
+                const databaseRef = firebase.database().ref().child('Product');
+                databaseRef.once("value").then(function() {
+
+                    imgThumnalarr = {
+                        img1: imgThumnal.value,
+                    }
+
+                    const productData = {
+                        "description": description.value,
+                        "imgThumnal": imgThumnalarr,
+                        "moreInfo": moreInfo.value,
+                        "priceProduct": priceProduct.value,
+                        "productName": productName.value,
+                    }
+
+                    const newProductRef = databaseRef.push();
+                    newProductRef.set(productData, function(err) {
+                        if (err) {
+                            results.attr("class", "alert alert-danger")
+                            results.html(err.message);
+                        } else {
+                            results.attr("class", "alert alert-success")
+                            results.html("Product has been uploaded successfully");
+
+                            main_form.reset();
+                            selected_img.style.display = "none"
+                        }
+                    })
+                })
+            }
         }
+
+        window.onload = function getAll(){
+            const product = [];
+            const firebaseRef = firebase.database().ref().child("Product").orderByChild("productName");
+
+            firebaseRef.on('value',function (snapshot){
+                if (snapshot.exists()){
+                    let productHTML =""
+                    let data;
+                    snapshot.forEach(function (singleProduct){
+                        data = singleProduct.val();
+                        product.push(singleProduct.val());
+
+                        productHTML += "<div class=\"col-md-4 col-sm-6\">"
+                        productHTML += "<div class=\"mb-30 card \">"
+                            productHTML += "<div class=\"inner\">"
+                                productHTML += "<div class=\"main-img\"><img id=\"product_Image\" alt=\"Category\" src='"
+                                    productHTML +=  data.imgThumnal.img1;
+                                productHTML += "'/>"
+
+                        productHTML += "<div class=\"card-body text-center\">"
+                            productHTML += "<h4 class=\"card-title\" id=\"product_Name\">"
+                                productHTML += data.productName;
+                            productHTML += "</h4>"
+                            productHTML += "<p class=\"text-muted\" id=\"product_Price\">"
+                                productHTML += "Starting from " + data.priceProduct
+                            productHTML += "</p>"
+                            productHTML +=  "<a class=\"btn btn-outline-primary btn-sm\" href=\"#\" data-abc=\"true\">View Products</a>"
+                        productHTML += "</div>"
+                        productHTML += "</div>"
+                        productHTML += "</div>"
+                        productHTML += "</div>"
+                        productHTML += "</div>"
+                        $("#products").html(productHTML);
+                    })
+                    for (let i =0;i<product.length;i++){
+
+
+                    }
+
+                }
+            })
+        }
+
+
     </script>
     <!-- JavaScript Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>

@@ -6,10 +6,10 @@ document.getElementById("btn-login").onclick = function () {
     if (email !== "" && password !== "") {
         if (email === "admin@gmail.com" || email === "tuan51002@gmail.com"
             || email === "tuan051002@gmail.com" || email === "bao1234@gmail.com") {
-            var result = firebase.auth().signInWithEmailAndPassword(email, password);
+            const result = firebase.auth().signInWithEmailAndPassword(email, password);
             result.catch(function (error) {
-                var errorCode = error.code;
-                var errorMessage = error.message;
+                const errorCode = error.code;
+                const errorMessage = error.message;
 
                 console.log(errorCode);
                 console.log(errorMessage);
@@ -24,10 +24,10 @@ document.getElementById("btn-login").onclick = function () {
             });
         }
         else {
-            window.alert("You don't have permistion to login.")
+            window.alert("You don't have permission to login.")
         }
     }
     else {
-        window.alert('Form is incomplete. Please fill out all fileds.')
+        window.alert('Form is incomplete. Please fill out all filed.')
     }
 };
