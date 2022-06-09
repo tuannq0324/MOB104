@@ -85,7 +85,7 @@
                             <input type="text" onchange="previewImage()" class="form-control" style="width: 100%; height: 45px" id="imgThumnal" placeholder="Link of image... (required length is equal to width)" required>
                         </div>
                         <div class="form-group text-center" style="padding-bottom: 10px">
-                            <img id="selected-img" width="auto" height="auto" src="#">
+                            <img style="margin-left: 25%" id="selected-img" width="45%" height="45%" src="#">
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control" style="width: 100%; height: 45px" id="moreInfo" placeholder="More Info..." required>
@@ -242,7 +242,7 @@
                                 productHTML += data.productName;
                             productHTML += "</h4>"
                             productHTML += "<p class=\"text-muted\" id=\"product_Price\">"
-                                productHTML += "Starting from " + data.priceProduct
+                                productHTML += "Starting from " + new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.priceProduct)
                             productHTML += "</p>"
                             productHTML +=  "<a class=\"btn btn-outline-primary btn-sm\" href=\"#\" data-abc=\"true\">View Products</a>"
                         productHTML += "</div>"
