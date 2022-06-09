@@ -241,9 +241,9 @@
                             productHTML += "<h4 class=\"card-title\" id=\"product_Name\">"
                                 productHTML += data.productName;
                             productHTML += "</h4>"
-                            productHTML += "<p class=\"text-muted\" id=\"product_Price\">"
-                                productHTML += "Starting from " + new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.priceProduct)
-                            productHTML += "</p>"
+                            productHTML += "<p style='color: orangered;--bs-text-opacity: 1;' id=\"product_Price\"><b>"
+                                productHTML += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.priceProduct)
+                            productHTML += "</b></p>"
                             productHTML +=  "<a class=\"btn btn-outline-primary btn-sm\" href=\"#\" data-abc=\"true\">View Products</a>"
                         productHTML += "</div>"
                         productHTML += "</div>"
