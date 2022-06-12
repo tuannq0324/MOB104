@@ -45,8 +45,13 @@
                 </a>
                 </li>
                 <li>
-                    <a class="nav-link" style="color: whitesmoke; text-decoration-style: wavy;" href="#">
+                    <a class="nav-link" style="color: whitesmoke; text-decoration-style: wavy;" href="home">
                         <span style="color: white">Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link" style="color: whitesmoke; text-decoration-style: wavy;" href="product">
+                        <span style="color: white">Product</span>
                     </a>
                 </li>
             </ul>
@@ -54,11 +59,11 @@
             <div class="dropdown navbar-right">
                 <button class="btn btn-light dropdown-toggle bg-dark text-white" id="option-id" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Options
-            </button>
+                </button>
                 <div class="dropdown-menu" aria-labelledby="option-id">
                     <a class="dropdown-item" id="btn-logout" href="#">
                     Logout
-                </a>
+                    </a>
                 </div>
             </div>
         </div>
@@ -84,8 +89,8 @@
                         <div class="form-group">
                             <input type="text" onchange="previewImage()" class="form-control" style="width: 100%; height: 45px" id="imgThumnal" placeholder="Link of image... (required length is equal to width)" required>
                         </div>
-                        <div class="form-group text-center" style="padding-bottom: 10px">
-                            <img style="margin-left: 25%" id="selected-img" width="45%" height="45%" src="#">
+                        <div class="form-group" style="padding-bottom: 10px;text-align: -webkit-center">
+                            <img id="selected-img" width="45%" height="45%" src="#">
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control" style="width: 100%; height: 45px" id="moreInfo" placeholder="More Info..." required>
@@ -97,31 +102,31 @@
                             <input type="text" class="form-control" style="width: 100%; height: 45px" id="productName" placeholder="Product Name..." required>
                         </div>
                         <div class="form-group text-center">
-                            <button id="btn_upload" onclick="checkEmpty()" type="button" style="width: 150px; height: 60px;" class="btn btn-light bg-dark text-light">Upload Product</button>
+                            <button id="btn_upload" onclick="checkEmpty()" type="button" style="width: 150px; height: 60px;" class="btn btn-outline-success btn-sm">Upload Product</button>
                         </div>
                     </form>
 
                     <div style="text-align: center" id="result"></div>
                 </div>
-                <hr>
-                <br><br><br>
-                <div class="text-center bg-light text-dark">
-                    <h3>ALL PRODUCT</h3>
-                </div>
+<!--                <hr>-->
+<!--                <br><br><br>-->
+<!--                <div class="text-center bg-light text-dark">-->
+<!--                    <h3>ALL PRODUCT</h3>-->
+<!--                </div>-->
 
-                <hr>
-                <br>
+<!--                <hr>-->
+<!--                <br>-->
 
 
-<!--                <div class="row container-fluid bg-3">-->
-<!--                    <div class="col-sm-12" >-->
+<!--&lt;!&ndash;                <div class="row container-fluid bg-3">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="col-sm-12" >&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--                <div class="container mt-100" id="product">-->
+<!--                    <div class="row" id="products">-->
 <!--                    </div>-->
 <!--                </div>-->
-                <div class="container mt-100" >
-                    <div class="row" id="products">
-                    </div>
-                </div>
-                <br>
+<!--                <br>-->
             </div>
         </div>
     </div>
@@ -187,7 +192,8 @@
             function firebaseUpload() {
 
                 const databaseRef = firebase.database().ref().child('Product');
-                databaseRef.once("value").then(function() {
+                const productID = databaseRef.once("value");
+                productID.then(function() {
 
                     imgThumnalarr = {
                         img1: imgThumnal.value,
@@ -197,7 +203,7 @@
                         "description": description.value,
                         "imgThumnal": imgThumnalarr,
                         "moreInfo": moreInfo.value,
-                        "priceProduct": priceProduct.value,
+                        "priceProduct": priceProduct.value.trim(),
                         "productName": productName.value,
                     }
 
@@ -218,7 +224,9 @@
             }
         }
 
-        window.onload = function getAll(){
+        let productID;
+        let lis;
+            function getAll(){
             const product = [];
             const firebaseRef = firebase.database().ref().child("Product").orderByChild("productName");
 
@@ -226,13 +234,16 @@
                 if (snapshot.exists()){
                     let productHTML =""
                     let data;
+
                     snapshot.forEach(function (singleProduct){
                         data = singleProduct.val();
                         product.push(singleProduct.val());
+                        productID = singleProduct.key;
+
 
                         productHTML += "<div class=\"col-md-4 col-sm-6\">"
                         productHTML += "<div class=\"mb-30 card \">"
-                            productHTML += "<div class=\"inner\">"
+                            productHTML += "<div class=\"inner\" id='productID'>"
                                 productHTML += "<div class=\"main-img\"><img id=\"product_Image\" alt=\"Category\" src='"
                                     productHTML +=  data.imgThumnal.img1;
                                 productHTML += "'/>"
@@ -244,23 +255,27 @@
                             productHTML += "<p style='color: orangered;--bs-text-opacity: 1;' id=\"product_Price\"><b>"
                                 productHTML += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.priceProduct)
                             productHTML += "</b></p>"
-                            productHTML +=  "<a class=\"btn btn-outline-primary btn-sm\" href=\"#\" data-abc=\"true\">View Products</a>"
+                            productHTML +=  "<div><a onclick='getProduct(this.id)' class=\"btn btn-outline-primary btn-sm\" id='"
+                                productHTML += productID
+                            productHTML += "'>View Products</a></div>"
                         productHTML += "</div>"
                         productHTML += "</div>"
                         productHTML += "</div>"
                         productHTML += "</div>"
                         productHTML += "</div>"
+
                         $("#products").html(productHTML);
                     })
-                    for (let i =0;i<product.length;i++){
-
-
-                    }
-
                 }
             })
         }
 
+        function getProduct(id){
+            console.log(id)
+            localStorage.setItem("ID",id);
+            window.location.href='/home.html';
+            window.location = 'product.html'
+        }
 
     </script>
     <!-- JavaScript Bundle with Popper -->
